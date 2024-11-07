@@ -7,6 +7,7 @@ def align(
         banded_width=-1,
         gap='-'
 ) -> tuple[float, str | None, str | None]:
+	print("Hello World")
     """
         Align seq1 against seq2 using Needleman-Wunsch
         Put seq1 on left (j) and seq2 on top (i)
