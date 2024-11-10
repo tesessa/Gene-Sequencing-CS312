@@ -212,12 +212,11 @@ def banded_edit(seq1: str, seq2: str, d, bandwidth):
     band_dict = dict()
     band_dict.update({tuple([0,0]): dist_value(0)})
     intit_basecase(band_dict,d+1,d+1, True)
-    print_dict(band_dict)
+    #print_dict(band_dict)
     if(d< (len(seq2)-1)):
         d=d+2
-    fill_matrix3(band_dict,d,7, seq1, seq2,True) #(matrix, d, bandwidth, seq1, seq2, band: bool #matrix, d, bandwidth, seq1, seq2, band: bool)
-    print_dict(band_dict)
-    print("filled")
+    fill_matrix3(band_dict,d,bandwidth, seq1, seq2,True) #(matrix, d, bandwidth, seq1, seq2, band: bool #matrix, d, bandwidth, seq1, seq2, band: bool)
+    #print_dict(band_dict)
     dist = band_dict.get((len(seq1)-1, len(seq2)-1))
     return dist, band_dict
 
@@ -291,22 +290,26 @@ def get_alignment_test(matrix, seq1, seq2):
 def fill_matrix3(matrix, d, bandwidth, seq1, seq2, band: bool):
     #b_row = 1
     b_col = 1
+    at_bandwidth = False
     for i in range(1,len(seq1)):
         for j in range(b_col, d):
-            print("i: ", i, " j: ", j)
-            print("d: ", d)
-            print("b_col: ", b_col)
+            #print("i: ", i, " j: ", j)
+            #print("d: ", d)
+            #print("b_col: ", b_col)
             dist, index = calculate_dist_test(matrix.get((i-1,j-1)), matrix.get((i-1,j)), 
                 matrix.get((i,j-1)), seq1, seq2, i, j) # call function
             matrix[(i,j)] = dist_value(dist) #setting new dist_value
             matrix.get((i,j)).prev_dist_index = index 
 
-            print_dict(matrix)
-            print()
+            #print_dict(matrix)
+           # print()
         if(d != len(seq2)):
             d = d+1
+        if(at_bandwidth):
+           b_col = b_col+1 
         if(d > bandwidth):
-            b_col = b_col+1
+            at_bandwidth = True
+            #b_col = b_col+1
             
             
 
@@ -350,12 +353,14 @@ def align(
     gap = gap
     seq1 = gap + seq1
     seq2 = gap + seq2
+    d = banded_width
+    band = (2*d)+1
     if(banded_width == -1):
         dist, matrix = normal_edit(seq1, seq2)
         alignment1, alignment2 = get_alignment(matrix,seq1,seq2)
     
     else:
-        dist, matrix = banded_edit(seq1, seq2,d, banded_width)
+        dist, matrix = banded_edit(seq1, seq2,d, band)
         alignment1, alignment2 = get_alignment_test(matrix,seq1,seq2)
   
 
@@ -383,7 +388,8 @@ def main():
     print(b2)
     print(dist2)
     #dist, a, b = align("ACAATCC", "AGCATGC", banded_width=3)
-    dist, a, b = align("ATGCATGC", "ATGGTGC", banded_width=3)
+    dist, a, b = align("GGGGTTTTAAAACCCCTTTT", "TTTTAAAACCCCTTTTGGGG", banded_width=2)
+    #dist, a, b = align("ATGCATGC", "ATGGTGC", banded_width=3)
     print(a)
     print(b)
     print(dist)
