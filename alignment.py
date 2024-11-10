@@ -206,6 +206,15 @@ def normal_edit(seq1: str, seq2: str):
     print_matrix(matrix)
     return dist, matrix
 
+def normal_edit2(seq1, seq2):
+    dist = 0
+    matrix = dict()
+    matrix.update({tuple([0,0]): dist_value(0)})
+    intit_basecase(matrix,len(seq1), len(seq2), True)
+    fill_matrix3(matrix, len(seq2), d, seq1, seq2, False)
+    dist = matrix.get((len(seq1)-1, len(seq2)-1))
+
+    return dist, matrix
 #could just have a dictionary with the dist value and 'index'
 def banded_edit(seq1: str, seq2: str, d, bandwidth):
     dist = 0
@@ -303,12 +312,13 @@ def fill_matrix3(matrix, d, bandwidth, seq1, seq2, band: bool):
 
             #print_dict(matrix)
            # print()
-        if(d != len(seq2)):
-            d = d+1
-        if(at_bandwidth):
-           b_col = b_col+1 
-        if(d > bandwidth):
-            at_bandwidth = True
+        if(band):
+            if(d != len(seq2)):
+                d = d+1
+            if(at_bandwidth):
+                b_col = b_col+1 
+            if(d > bandwidth):
+                at_bandwidth = True
             #b_col = b_col+1
             
             
@@ -356,12 +366,13 @@ def align(
     d = banded_width
     band = (2*d)+1
     if(banded_width == -1):
-        dist, matrix = normal_edit(seq1, seq2)
-        alignment1, alignment2 = get_alignment(matrix,seq1,seq2)
+        dist, matrix = normal_edit2(seq1, seq2)
     
     else:
         dist, matrix = banded_edit(seq1, seq2,d, band)
-        alignment1, alignment2 = get_alignment_test(matrix,seq1,seq2)
+
+        
+    alignment1, alignment2 = get_alignment_test(matrix,seq1,seq2)
   
 
     return dist, alignment1, alignment2
