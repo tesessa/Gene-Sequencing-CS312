@@ -17,7 +17,7 @@ class dist_value:
     def __str__(self):
         return f"{self.value}"
 
-def print_matrix(matrix):
+'''def print_matrix(matrix):
     for i in range(len(matrix)):
         for j in range(len(matrix[i])):
             if(type(matrix[i][j]) == int):
@@ -27,7 +27,7 @@ def print_matrix(matrix):
             
         print("\n") 
 
-    return None   
+    return None   '''
 
 def print_dict(band_dict):
     for key, value in band_dict.items():
@@ -35,7 +35,7 @@ def print_dict(band_dict):
 
 
 
-def calculate_dist(diag: int, up: int, side: int, seq1: str, seq2: str, 
+'''def calculate_dist(diag: int, up: int, side: int, seq1: str, seq2: str, 
                 row_index, col_index) -> tuple[int, tuple[int, int]]:
     dist = None
     if(side!=None):
@@ -69,47 +69,47 @@ def calculate_dist(diag: int, up: int, side: int, seq1: str, seq2: str,
         index = [row_index-1, col_index]
 
     
-    return dist, index
+    return dist, index'''
 
 def intit_basecase(matrix, d_row, d_col, band: bool):
     for i in range(1,d_col):
-        if(band):
-            matrix[(0,i)] = dist_value(matrix.get((0, i-1)).value + blank )
+        #if(band):
+        matrix[(0,i)] = dist_value(matrix.get((0, i-1)).value + blank )
           #  matrix.update({(0,i): dist_value(matrix.get([0, i-1]).value + blank)})
-            matrix.get(tuple([0,i])).prev_dist_index = [0,i-1]
-        else:
+        matrix.get(tuple([0,i])).prev_dist_index = [0,i-1]
+        '''else:
             matrix[0][i] = dist_value(matrix[0][i-1].value + blank)
-            matrix[0][i].prev_dist_index = [0,i-1]
+            matrix[0][i].prev_dist_index = [0,i-1]'''
     for i in range(1,d_row):
-        if(band):
-            matrix[(i,0)] = dist_value(matrix.get((i-1,0)).value + blank)
+        #if(band):
+        matrix[(i,0)] = dist_value(matrix.get((i-1,0)).value + blank)
             #matrix.update({tuple([i,0]): dist_value(matrix.get([i-1, 0]).value + blank)})
-            matrix.get(tuple([i,0])).prev_dist_index = [i-1,0] 
-        else:
+        matrix.get(tuple([i,0])).prev_dist_index = [i-1,0] 
+        '''else:
             matrix[i][0] = dist_value(matrix[i-1][0].value + blank)
-            matrix[i][0].prev_dist_index = [i-1,0]
+            matrix[i][0].prev_dist_index = [i-1,0]'''
        # print("i: ", i, " prev_dist_val ", matrix[i][0].prev_dist_val)
     
     return None
 
 #think about setting up calc distance differently and using dict for original method
-def fill_matrix_test(matrix, d_row, d_col, bandwidth, seq1, seq2, band: bool):
+'''def fill_matrix_test(matrix, d_row, d_col, bandwidth, seq1, seq2, band: bool):
     b=1
     for i in range(1,len(seq1)):
         for j in range(b,d_row):
             print("i: ", i, " j: ", j)
             print_dict(matrix)
-            dist, index = calculate_dist_test(matrix.get((i-1,j-1)), matrix.get((i-1,j)), 
+            dist, index = calculate_dist(matrix.get((i-1,j-1)), matrix.get((i-1,j)), 
                 matrix.get((i,j-1)), seq1, seq2, i, j) # call function
             matrix[(i,j)] = dist_value(dist) #setting new dist_value
             matrix.get((i,j)).prev_dist_index = index #could make another function that inputs this
-            dist_col, index_col = calculate_dist_test(matrix.get((j-1,i-1)), matrix.get((j-1,i)),
+            dist_col, index_col = calculate_dist(matrix.get((j-1,i-1)), matrix.get((j-1,i)),
                 matrix.get((j,i-1)), seq1, seq2, i, j)
             matrix[(j,i)] = dist_value(dist_col)
             matrix.get((j,i)).prev_dist_index = index_col
-            '''if(d != len(seq1)): #do we need this for banded?
+            if(d != len(seq1)): #do we need this for banded?
                 d=d+1
-            b = b+1'''
+            b = b+1
             print("val: ", matrix.get((i,j)).value)
         if(d_row != len(seq1)): #do we need this for banded?
             d_row=d_row+1
@@ -117,9 +117,9 @@ def fill_matrix_test(matrix, d_row, d_col, bandwidth, seq1, seq2, band: bool):
             d_col = d_col+1
         b = b+1
 
-    return None
+    return None'''
     
-def calculate_dist_test(diag, up, side, seq1: str, seq2: str, 
+def calculate_dist(diag, up, side, seq1: str, seq2: str, 
                 row_index, col_index) -> tuple[int, tuple[int, int]]:
     if(side!=None):
         side = side.value+blank
@@ -161,11 +161,11 @@ def calculate_dist_test(diag, up, side, seq1: str, seq2: str,
             index = [row_index-1, col_index]'''
     return dist, index
 
-def fill_matrix(matrix, d_row, d_col, bandwidth, seq1, seq2, b_col, band: bool):
+'''def fill_matrix(matrix, d_row, d_col, bandwidth, seq1, seq2, b_col, band: bool):
     for i in range(1,d_row):
         for j in range(b_col,d_col):
             #print("i: ", i, " j: ", j)
-            '''if(band):
+            if(band):
                 print("i: ",i, " j: ", j)
                 if(matrix.get((i,j-1))== None):
                     dist,index = calculate_dist(matrix.get((i-1,j-1)), matrix.get((i-1,j)).value, None,
@@ -185,15 +185,15 @@ def fill_matrix(matrix, d_row, d_col, bandwidth, seq1, seq2, b_col, band: bool):
                 if(d_col+1 == bandwidth):
                     b_col = b_col+1
                 print("val: ", matrix.get((i,j)).value)
-            else:'''
+            else:
             dist, index = calculate_dist(matrix[i-1][j-1].value,matrix[i-1][j].value,
             matrix[i][j-1].value, seq1, seq2, i,j)
             matrix[i][j] = dist_value(dist)
             matrix[i][j].prev_dist_index = index
 
-    return None
+    return None'''
 
-def normal_edit(seq1: str, seq2: str):
+'''def normal_edit(seq1: str, seq2: str):
    # seq1 = gap + seq1
    # seq2 = gap + seq2
     d_row = len(seq1)
@@ -204,15 +204,15 @@ def normal_edit(seq1: str, seq2: str):
     fill_matrix(matrix, len(seq1), len(seq2), 0, seq1, seq2,1, False)
     dist = matrix[d_row-1][d_col-1]
     print_matrix(matrix)
-    return dist, matrix
+    return dist, matrix'''
 
-def normal_edit2(seq1, seq2):
+def normal_edit(seq1, seq2):
     dist = 0
     matrix = dict()
     matrix.update({tuple([0,0]): dist_value(0)})
     intit_basecase(matrix,len(seq1), len(seq2), True)
-    fill_matrix3(matrix, len(seq2), d, seq1, seq2, False)
-    dist = matrix.get((len(seq1)-1, len(seq2)-1))
+    fill_matrix(matrix, len(seq2), d, seq1, seq2, False)
+    dist = matrix.get((len(seq1)-1, len(seq2)-1)).value
 
     return dist, matrix
 #could just have a dictionary with the dist value and 'index'
@@ -224,14 +224,14 @@ def banded_edit(seq1: str, seq2: str, d, bandwidth):
     #print_dict(band_dict)
     if(d< (len(seq2)-1)):
         d=d+2
-    fill_matrix3(band_dict,d,bandwidth, seq1, seq2,True) #(matrix, d, bandwidth, seq1, seq2, band: bool #matrix, d, bandwidth, seq1, seq2, band: bool)
+    fill_matrix(band_dict,d,bandwidth, seq1, seq2,True) #(matrix, d, bandwidth, seq1, seq2, band: bool #matrix, d, bandwidth, seq1, seq2, band: bool)
     #print_dict(band_dict)
-    dist = band_dict.get((len(seq1)-1, len(seq2)-1))
+    dist = band_dict.get((len(seq1)-1, len(seq2)-1)).value
     return dist, band_dict
 
 #need to consider gaps in this function
 # also need to check indexing for string
-def get_alignment(matrix,seq1,seq2):
+'''def get_alignment(matrix,seq1,seq2):
     #i = 0
     alg_mat = []
     align1 = ''
@@ -261,9 +261,9 @@ def get_alignment(matrix,seq1,seq2):
             align2 = align2 + seq2[val[1]]
         prev_i = val[0]
         prev_j = val[1]
-    return align1, align2
+    return align1, align2'''
 
-def get_alignment_test(matrix, seq1, seq2):
+def get_alignment(matrix, seq1, seq2):
     #i = 0
     alg_mat = []
     align1 = ''
@@ -296,7 +296,7 @@ def get_alignment_test(matrix, seq1, seq2):
     return align1, align2 
 
 
-def fill_matrix3(matrix, d, bandwidth, seq1, seq2, band: bool):
+def fill_matrix(matrix, d, bandwidth, seq1, seq2, band: bool):
     #b_row = 1
     b_col = 1
     at_bandwidth = False
@@ -305,7 +305,7 @@ def fill_matrix3(matrix, d, bandwidth, seq1, seq2, band: bool):
             #print("i: ", i, " j: ", j)
             #print("d: ", d)
             #print("b_col: ", b_col)
-            dist, index = calculate_dist_test(matrix.get((i-1,j-1)), matrix.get((i-1,j)), 
+            dist, index = calculate_dist(matrix.get((i-1,j-1)), matrix.get((i-1,j)), 
                 matrix.get((i,j-1)), seq1, seq2, i, j) # call function
             matrix[(i,j)] = dist_value(dist) #setting new dist_value
             matrix.get((i,j)).prev_dist_index = index 
@@ -320,7 +320,7 @@ def fill_matrix3(matrix, d, bandwidth, seq1, seq2, band: bool):
             if(d > bandwidth):
                 at_bandwidth = True
             #b_col = b_col+1
-            
+    return None 
             
 
 # for right now it is str1 on row, str2 on col
@@ -366,16 +366,16 @@ def align(
     d = banded_width
     band = (2*d)+1
     if(banded_width == -1):
-        dist, matrix = normal_edit2(seq1, seq2)
+        dist, matrix = normal_edit(seq1, seq2)
     
     else:
         dist, matrix = banded_edit(seq1, seq2,d, band)
 
-        
-    alignment1, alignment2 = get_alignment_test(matrix,seq1,seq2)
-  
 
-    return dist, alignment1, alignment2
+    alignment1, alignment2 = get_alignment(matrix,seq1,seq2)
+    
+
+    return int(dist), alignment1, alignment2
     """
         Align seq1 against seq2 using Needleman-Wunsch
         Put seq1 on left (j) and seq2 on top (i)
@@ -390,7 +390,7 @@ def align(
         :return: alignment cost, alignment 1, alignment 2
     """
 
-def main():
+'''def main():
     str1 = "hey"
     str2 = "he"
     dist2, a2, b2 = align("ATGCATGC", "ATGGTGC")
@@ -411,4 +411,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main()'''
