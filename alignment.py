@@ -6,6 +6,7 @@ sub = 1
 gap = '-'
 d=3
 
+#class that is contains a 'value' or distance and a pointer ot the previous distance index
 class dist_value:
     def __init__(self, value, prev_dist_index: tuple[int,int] = None):
         self.value = value
@@ -17,108 +18,25 @@ class dist_value:
     def __str__(self):
         return f"{self.value}"
 
-'''def print_matrix(matrix):
-    for i in range(len(matrix)):
-        for j in range(len(matrix[i])):
-            if(type(matrix[i][j]) == int):
-                print(matrix[i][j], " ", end="")
-            else:
-                print(matrix[i][j].value, " ", end="")
-            
-        print("\n") 
-
-    return None   '''
 
 def print_dict(band_dict):
     for key, value in band_dict.items():
         print(key, value.value)
 
 
-
-'''def calculate_dist(diag: int, up: int, side: int, seq1: str, seq2: str, 
-                row_index, col_index) -> tuple[int, tuple[int, int]]:
-    dist = None
-    if(side!=None):
-        side = side+blank
-    if(up!= None):
-        up = up+blank
-    index = None
-    if seq1[row_index] == seq2[col_index]:
-        diag = diag+match
-    else:
-        diag = diag +sub
-    dist = diag
-    index = [row_index-1, col_index-1]
-    if(up == None) or (side==None):
-        if(up==None) and (side < diag):
-            dist = side
-            index = [row_index, col_index-1]
-        elif(side == None) and (up < diag):
-            dist = diag
-            index = [row_index-1, col_index]
-    else:
-        if (side < diag) and (side < up):
-            dist = side
-            index = [row_index, col_index-1]
-        elif (up < side) and (up < diag):
-            dist = up
-            index = [row_index-1, col_index]
-
-    if (up < diag):
-        dist = up
-        index = [row_index-1, col_index]
-
-    
-    return dist, index'''
-
-def intit_basecase(matrix, d_row, d_col, band: bool):
+#initalizes the 'basecase' of the matrix
+def intit_basecase(matrix, d_row, d_col):
     for i in range(1,d_col):
-        #if(band):
         matrix[(0,i)] = dist_value(matrix.get((0, i-1)).value + blank )
-          #  matrix.update({(0,i): dist_value(matrix.get([0, i-1]).value + blank)})
         matrix.get(tuple([0,i])).prev_dist_index = [0,i-1]
-        '''else:
-            matrix[0][i] = dist_value(matrix[0][i-1].value + blank)
-            matrix[0][i].prev_dist_index = [0,i-1]'''
     for i in range(1,d_row):
         #if(band):
         matrix[(i,0)] = dist_value(matrix.get((i-1,0)).value + blank)
-            #matrix.update({tuple([i,0]): dist_value(matrix.get([i-1, 0]).value + blank)})
         matrix.get(tuple([i,0])).prev_dist_index = [i-1,0] 
-        '''else:
-            matrix[i][0] = dist_value(matrix[i-1][0].value + blank)
-            matrix[i][0].prev_dist_index = [i-1,0]'''
-       # print("i: ", i, " prev_dist_val ", matrix[i][0].prev_dist_val)
     
     return None
 
-#think about setting up calc distance differently and using dict for original method
-'''def fill_matrix_test(matrix, d_row, d_col, bandwidth, seq1, seq2, band: bool):
-    b=1
-    for i in range(1,len(seq1)):
-        for j in range(b,d_row):
-            print("i: ", i, " j: ", j)
-            print_dict(matrix)
-            dist, index = calculate_dist(matrix.get((i-1,j-1)), matrix.get((i-1,j)), 
-                matrix.get((i,j-1)), seq1, seq2, i, j) # call function
-            matrix[(i,j)] = dist_value(dist) #setting new dist_value
-            matrix.get((i,j)).prev_dist_index = index #could make another function that inputs this
-            dist_col, index_col = calculate_dist(matrix.get((j-1,i-1)), matrix.get((j-1,i)),
-                matrix.get((j,i-1)), seq1, seq2, i, j)
-            matrix[(j,i)] = dist_value(dist_col)
-            matrix.get((j,i)).prev_dist_index = index_col
-            if(d != len(seq1)): #do we need this for banded?
-                d=d+1
-            b = b+1
-            print("val: ", matrix.get((i,j)).value)
-        if(d_row != len(seq1)): #do we need this for banded?
-            d_row=d_row+1
-        if(d_col != len(seq2)):
-            d_col = d_col+1
-        b = b+1
-
-    return None'''
-    
+#this is used to calculate the distance to take in the matrix 
 def calculate_dist(diag, up, side, seq1: str, seq2: str, 
                 row_index, col_index) -> tuple[int, tuple[int, int]]:
     if(side!=None):
@@ -141,24 +59,19 @@ def calculate_dist(diag, up, side, seq1: str, seq2: str,
             dist = up
             index = [row_index-1, col_index]
     else:
-        if (side < diag) and (side < up):
+        '''if(up < side) and (up < diag):
+            dist = up
+            index = [row_index-1, col_index]
+        elif(side < diag) and (side < up):
+            dist = side
+            index = [row_index, col_index-1]'''
+        if (side < diag) and (side <= up):
             dist = side
             index = [row_index, col_index-1]
         elif (up < side) and (up < diag):
             dist = up
             index = [row_index-1, col_index]
 
-    ''' if (up!=None) and (up < diag):
-        dist = up
-        index = [row_index-1, col_index]
-
-    if(up == None) or (side==None):
-        if(up==None) and (side < diag):
-            dist = side
-            index = [row_index, col_index-1]
-        elif(side == None) and (up < diag):
-            dist = diag
-            index = [row_index-1, col_index]'''
     return dist, index
 
 '''def fill_matrix(matrix, d_row, d_col, bandwidth, seq1, seq2, b_col, band: bool):
@@ -193,76 +106,34 @@ def calculate_dist(diag, up, side, seq1: str, seq2: str,
 
     return None'''
 
-'''def normal_edit(seq1: str, seq2: str):
-   # seq1 = gap + seq1
-   # seq2 = gap + seq2
-    d_row = len(seq1)
-    d_col = len(seq2)
-    matrix = [[0 for _ in range(len(seq2))] for _ in range(len(seq1))] 
-    matrix[0][0] = dist_value(0)
-    intit_basecase(matrix, len(seq1), len(seq2), False)
-    fill_matrix(matrix, len(seq1), len(seq2), 0, seq1, seq2,1, False)
-    dist = matrix[d_row-1][d_col-1]
-    print_matrix(matrix)
-    return dist, matrix'''
 
+# this function gets the normal edit of a sequence
 def normal_edit(seq1, seq2):
     dist = 0
     matrix = dict()
     matrix.update({tuple([0,0]): dist_value(0)})
-    intit_basecase(matrix,len(seq1), len(seq2), True)
+    intit_basecase(matrix,len(seq1), len(seq2))
     fill_matrix(matrix, len(seq2), d, seq1, seq2, False)
     dist = matrix.get((len(seq1)-1, len(seq2)-1)).value
 
     return dist, matrix
-#could just have a dictionary with the dist value and 'index'
+
+#this function is used to get banded edit, calls same functions as normal edit but with diff values
 def banded_edit(seq1: str, seq2: str, d, bandwidth):
     dist = 0
     band_dict = dict()
     band_dict.update({tuple([0,0]): dist_value(0)})
-    intit_basecase(band_dict,d+1,d+1, True)
-    #print_dict(band_dict)
+    intit_basecase(band_dict,d+1,d+1)
     if(d< (len(seq2)-1)):
         d=d+2
-    fill_matrix(band_dict,d,bandwidth, seq1, seq2,True) #(matrix, d, bandwidth, seq1, seq2, band: bool #matrix, d, bandwidth, seq1, seq2, band: bool)
-    #print_dict(band_dict)
+    fill_matrix(band_dict,d,bandwidth, seq1, seq2,True) 
     dist = band_dict.get((len(seq1)-1, len(seq2)-1)).value
     return dist, band_dict
 
 #need to consider gaps in this function
 # also need to check indexing for string
-'''def get_alignment(matrix,seq1,seq2):
-    #i = 0
-    alg_mat = []
-    align1 = ''
-    align2 = ''
-    alg_mat.append([len(seq1)-1,len(seq2)-1])
-    i = len(seq1)-1
-    j = len(seq2)-1
-    while(1):
-        prev = matrix[i][j].prev_dist_index
-        if(prev == [0,0]) or (prev == None):
-            break
-        alg_mat.append(prev)
-        i = prev[0]
-        j = prev[1]
-        #index = matrix[]
-    alg_mat.reverse()
-    prev_i = -1
-    prev_j = -1
-    for val in alg_mat:
-        if(val[0] == prev_i):
-            align1 = align1 + gap
-        else:
-            align1 = align1 + seq1[val[0]]
-        if(val[1] == prev_j):
-            align2 = align2 + gap
-        else:
-            align2 = align2 + seq2[val[1]]
-        prev_i = val[0]
-        prev_j = val[1]
-    return align1, align2'''
 
+#this function gets the alignment strings through the back pointers
 def get_alignment(matrix, seq1, seq2):
     #i = 0
     alg_mat = []
@@ -295,7 +166,7 @@ def get_alignment(matrix, seq1, seq2):
         prev_j = val[1]
     return align1, align2 
 
-
+# this funciton fills the 'matrix' for either banded or normal algorithm, sets bounds with different values
 def fill_matrix(matrix, d, bandwidth, seq1, seq2, band: bool):
     #b_row = 1
     b_col = 1
@@ -324,7 +195,7 @@ def fill_matrix(matrix, d, bandwidth, seq1, seq2, band: bool):
             
 
 # for right now it is str1 on row, str2 on col
-'''here is my design experience lol, so for normal obviously want to create a matrix with back pointers
+'''here are some of my thoughts, so for normal obviously want to create a matrix with back pointers
 if we are moving to the right, or down it will cost 5
 a match will be moving diagonal with a cost of -3
 a substitution will also be a diagonal move with cost of 1
@@ -337,15 +208,6 @@ seq1_len = len(seq1)
         matrix = np.empty(seq2_len, seq1_len)
     else:
         matrix = np.empty(seq1_len, seq2_len)
-'''
-'''
-banded algorithm
-list[[0,0],[0,1],[0,2],[0,3],[1,0],[1,1],[1,2],[1,3],[1,4],
-[2,0],[2,1],[2,2],[2,3],[2,4],[2,5],[3,0],[3,1],[3,2],[3,3],
-[3,4],[3,5],[3,6],[4,1],[4,2],[4,3],[4,4],[4,7],[5,2],[5,3],
-[5,4],[5,5],[5,6],[5,7],[6,3],[6,4],[6,5],[6,6],[6,7],[7,4]
-[7,5],[7,6],[7,7]]
-use dict which keeps track of what 'index' each value is at
 '''
 
 def align(
@@ -373,7 +235,6 @@ def align(
 
 
     alignment1, alignment2 = get_alignment(matrix,seq1,seq2)
-    
 
     return int(dist), alignment1, alignment2
     """
@@ -399,11 +260,14 @@ def align(
     print(b2)
     print(dist2)
     #dist, a, b = align("ACAATCC", "AGCATGC", banded_width=3)
-    dist, a, b = align("GGGGTTTTAAAACCCCTTTT", "TTTTAAAACCCCTTTTGGGG", banded_width=2)
+    #dist, a, b = align("GGGGTTTTAAAACCCCTTTT", "TTTTAAAACCCCTTTTGGGG", banded_width=2)
     #dist, a, b = align("ATGCATGC", "ATGGTGC", banded_width=3)
+    dist, a, b = align("ataagagtgattggcgatatcggctccgtacgtaccctttctactctcgggctcttccccgttagtttaaatctaatctctttataaacggcacttcc", 
+        "ataagagtgattggcgtccgtacgtaccctttctactctcaaactcttgttagtttaaatctaatctaaactttataaacggcacttcctgtgtgtccat", banded_width=20)
     print(a)
     print(b)
     print(dist)
+   
    
   
    # normal_edit(str1, str2)
