@@ -59,12 +59,6 @@ def calculate_dist(diag, up, side, seq1: str, seq2: str,
             dist = up
             index = [row_index-1, col_index]
     else:
-        '''if(up < side) and (up < diag):
-            dist = up
-            index = [row_index-1, col_index]
-        elif(side < diag) and (side < up):
-            dist = side
-            index = [row_index, col_index-1]'''
         if (side < diag) and (side <= up):
             dist = side
             index = [row_index, col_index-1]
@@ -73,38 +67,6 @@ def calculate_dist(diag, up, side, seq1: str, seq2: str,
             index = [row_index-1, col_index]
 
     return dist, index
-
-'''def fill_matrix(matrix, d_row, d_col, bandwidth, seq1, seq2, b_col, band: bool):
-    for i in range(1,d_row):
-        for j in range(b_col,d_col):
-            #print("i: ", i, " j: ", j)
-            if(band):
-                print("i: ",i, " j: ", j)
-                if(matrix.get((i,j-1))== None):
-                    dist,index = calculate_dist(matrix.get((i-1,j-1)), matrix.get((i-1,j)).value, None,
-                     seq1, seq2, i, j)
-                elif(matrix.get((i-1,j))==None):
-                    print("diag: ",matrix.get((i-1,j-1)))
-                    print("side: ",matrix.get((i,j-1)))
-                    dist, index = calculate_dist(matrix.get((i-1,j-1)).value, None, matrix.get((i,j-1)).value,
-                    seq1, seq2, i, j)
-                else:
-                    dist, index = calculate_dist(matrix.get((i-1,j-1)).value, matrix.get((i-1,j)).value, 
-                matrix.get((i,j-1)).value, seq1, seq2, i, j)
-                matrix[(i,j)] = dist_value(dist)
-                matrix.get((i,j)).prev_dist_index = index
-                if(d_col != len(seq1)):
-                    d_col = d_col+1
-                if(d_col+1 == bandwidth):
-                    b_col = b_col+1
-                print("val: ", matrix.get((i,j)).value)
-            else:
-            dist, index = calculate_dist(matrix[i-1][j-1].value,matrix[i-1][j].value,
-            matrix[i][j-1].value, seq1, seq2, i,j)
-            matrix[i][j] = dist_value(dist)
-            matrix[i][j].prev_dist_index = index
-
-    return None'''
 
 
 # this function gets the normal edit of a sequence
@@ -118,6 +80,7 @@ def normal_edit(seq1, seq2):
 
     return dist, matrix
 
+
 #this function is used to get banded edit, calls same functions as normal edit but with diff values
 def banded_edit(seq1: str, seq2: str, d, bandwidth):
     dist = 0
@@ -130,12 +93,9 @@ def banded_edit(seq1: str, seq2: str, d, bandwidth):
     dist = band_dict.get((len(seq1)-1, len(seq2)-1)).value
     return dist, band_dict
 
-#need to consider gaps in this function
-# also need to check indexing for string
 
 #this function gets the alignment strings through the back pointers
 def get_alignment(matrix, seq1, seq2):
-    #i = 0
     alg_mat = []
     align1 = ''
     align2 = ''
@@ -149,7 +109,6 @@ def get_alignment(matrix, seq1, seq2):
         alg_mat.append(prev)
         i = prev[0]
         j = prev[1]
-        #index = matrix[]
     alg_mat.reverse()
     prev_i = -1
     prev_j = -1
@@ -168,21 +127,15 @@ def get_alignment(matrix, seq1, seq2):
 
 # this funciton fills the 'matrix' for either banded or normal algorithm, sets bounds with different values
 def fill_matrix(matrix, d, bandwidth, seq1, seq2, band: bool):
-    #b_row = 1
     b_col = 1
     at_bandwidth = False
     for i in range(1,len(seq1)):
         for j in range(b_col, d):
-            #print("i: ", i, " j: ", j)
-            #print("d: ", d)
-            #print("b_col: ", b_col)
             dist, index = calculate_dist(matrix.get((i-1,j-1)), matrix.get((i-1,j)), 
                 matrix.get((i,j-1)), seq1, seq2, i, j) # call function
             matrix[(i,j)] = dist_value(dist) #setting new dist_value
             matrix.get((i,j)).prev_dist_index = index 
 
-            #print_dict(matrix)
-           # print()
         if(band):
             if(d != len(seq2)):
                 d = d+1
@@ -190,7 +143,7 @@ def fill_matrix(matrix, d, bandwidth, seq1, seq2, band: bool):
                 b_col = b_col+1 
             if(d > bandwidth):
                 at_bandwidth = True
-            #b_col = b_col+1
+
     return None 
             
 
@@ -229,7 +182,6 @@ def align(
     band = (2*d)+1
     if(banded_width == -1):
         dist, matrix = normal_edit(seq1, seq2)
-    
     else:
         dist, matrix = banded_edit(seq1, seq2,d, band)
 
