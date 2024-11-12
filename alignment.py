@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 match = -3
 blank = 5
@@ -25,7 +26,10 @@ def print_dict(band_dict):
 
 
 #initalizes the 'basecase' of the matrix
-def intit_basecase(matrix, d_row, d_col):
+# Time complexity: for banded O(2d) (just the inputted banded width times two) and for normal 
+# O(m+n) (or sequence lengths added together)
+# space complexity, for banded it is O(2d+1) right now, (we have dict not matrix), and for normal O(m+n)
+def intit_basecase(matrix, d_row, d_col): 
     for i in range(1,d_col):
         matrix[(0,i)] = dist_value(matrix.get((0, i-1)).value + blank )
         matrix.get(tuple([0,i])).prev_dist_index = [0,i-1]
@@ -37,8 +41,10 @@ def intit_basecase(matrix, d_row, d_col):
     return None
 
 #this is used to calculate the distance to take in the matrix 
+# Time complexity: All these calculations seem constant or O(1) time, so O(1) seems right
+# Space complexity: O(1) for all values, not matrixes or things like that we're keeping track of
 def calculate_dist(diag, up, side, seq1: str, seq2: str, 
-                row_index, col_index) -> tuple[int, tuple[int, int]]:
+                row_index, col_index) -> tuple[int, tuple[int, int]]: 
     if(side!=None):
         side = side.value+blank
     if(up!= None):
@@ -70,31 +76,40 @@ def calculate_dist(diag, up, side, seq1: str, seq2: str,
 
 
 # this function gets the normal edit of a sequence
-def normal_edit(seq1, seq2):
-    dist = 0
-    matrix = dict()
-    matrix.update({tuple([0,0]): dist_value(0)})
-    intit_basecase(matrix,len(seq1), len(seq2))
-    fill_matrix(matrix, len(seq2), d, seq1, seq2, False)
-    dist = matrix.get((len(seq1)-1, len(seq2)-1)).value
+# Time complexity: O(n*m + n + m) --> drop constants, O(nm)
+# Space complexity: by the end it should fill whole 'matrix', so O(nm)
+def normal_edit(seq1, seq2): 
+    dist = 0 
+    matrix = dict() #O(1)
+    matrix.update({tuple([0,0]): dist_value(0)}) #O(1)
+    intit_basecase(matrix,len(seq1), len(seq2)) #O(n+m)
+    fill_matrix(matrix, len(seq2), d, seq1, seq2, False) #O(nm)
+    dist = matrix.get((len(seq1)-1, len(seq2)-1)).value #O(1)
 
     return dist, matrix
 
 
 #this function is used to get banded edit, calls same functions as normal edit but with diff values
+#Time complexity: O(kn+2d) overall of O(kn), 2d is constant so it is dropped n being length of seq1
+#space complexity O(kn) a little less but we'll allow it
 def banded_edit(seq1: str, seq2: str, d, bandwidth):
     dist = 0
-    band_dict = dict()
-    band_dict.update({tuple([0,0]): dist_value(0)})
-    intit_basecase(band_dict,d+1,d+1)
+    band_dict = dict() #O(1)
+    band_dict.update({tuple([0,0]): dist_value(0)}) #O(1)
+    intit_basecase(band_dict,d+1,d+1) #O(2d)
     if(d< (len(seq2)-1)):
         d=d+2
-    fill_matrix(band_dict,d,bandwidth, seq1, seq2,True) 
-    dist = band_dict.get((len(seq1)-1, len(seq2)-1)).value
+    fill_matrix(band_dict,d,bandwidth, seq1, seq2,True) #O(kn)
+    dist = band_dict.get((len(seq1)-1, len(seq2)-1)).value 
     return dist, band_dict
 
 
 #this function gets the alignment strings through the back pointers
+# Time Complexity: while loop will go through O(alignment) values, or about O(n) or O(m) length 
+# second loop will go through the amount of char in alignment again, so whichever seq is bigger will be the 
+# one and then it will go through that twice so about O(2n) or O(2m)
+# space complexity is O(nm) or O(kn) depending on which implementation is used
+# biggest O(n+m) O(n) always be bigger than n
 def get_alignment(matrix, seq1, seq2):
     alg_mat = []
     align1 = ''
@@ -125,15 +140,23 @@ def get_alignment(matrix, seq1, seq2):
         prev_j = val[1]
     return align1, align2 
 
-# this funciton fills the 'matrix' for either banded or normal algorithm, sets bounds with different values
+# this funciton fills the 'matrix' for either banded or normal algorithm, 
+# sets bounds with different values
+# Time complexity: For normal we are looping through O(nm) times, for banded O(kn), k being bandwidth or 2d+1
+# banded is actually a little less because you don't start off just filling 7 values in the first few rows 
+# (you'll start by filling d+1 values then increase each iteration), but overall it is kn in worst case
+# 
+# Space Complexity: For normal it will end up with dict of O(nm) values, 
+# for banded it will end up with O(kn), k being banded width or 2d+1 since d amount of values are on 
+#either side of matrix
 def fill_matrix(matrix, d, bandwidth, seq1, seq2, band: bool):
     b_col = 1
     at_bandwidth = False
     for i in range(1,len(seq1)):
         for j in range(b_col, d):
             dist, index = calculate_dist(matrix.get((i-1,j-1)), matrix.get((i-1,j)), 
-                matrix.get((i,j-1)), seq1, seq2, i, j) # call function
-            matrix[(i,j)] = dist_value(dist) #setting new dist_value
+                matrix.get((i,j-1)), seq1, seq2, i, j) # O(1)
+            matrix[(i,j)] = dist_value(dist) #setting new dist_value O(1)
             matrix.get((i,j)).prev_dist_index = index 
 
         if(band):
@@ -162,7 +185,8 @@ seq1_len = len(seq1)
     else:
         matrix = np.empty(seq1_len, seq2_len)
 '''
-
+# For normal O(nm)
+# For banded O(kn) for both space and time complexity
 def align(
         seq1: str,
         seq2: str,
@@ -181,9 +205,11 @@ def align(
     d = banded_width
     band = (2*d)+1
     if(banded_width == -1):
-        dist, matrix = normal_edit(seq1, seq2)
+        dist, matrix = normal_edit(seq1, seq2) # O(nm)
     else:
-        dist, matrix = banded_edit(seq1, seq2,d, band)
+        if(abs(len(seq1)-len(seq2)) > d):
+            return math.inf, None, None
+        dist, matrix = banded_edit(seq1, seq2,d, band) # O()
 
 
     alignment1, alignment2 = get_alignment(matrix,seq1,seq2)
